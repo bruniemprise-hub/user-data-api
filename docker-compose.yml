@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: user-data-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: userdata
+
+  api:
+    build: .
+    container_name: user-data-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/userdata
+      - NODE_ENV=production
+    depends_on:
+      - mongo
+    volumes:
+      - ./api/uploads:/app/uploads
+
+volumes:
+  mongo-data:
